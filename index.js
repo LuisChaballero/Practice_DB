@@ -3,9 +3,10 @@ let morgan = require('morgan');
 let bodyParser = require('body-parser');
 let mongoose = require('mongoose');
 let jsonParser = bodyParser.json(); //middleware
-let {
-    StudentList
-} = require('./model'); //importar StudentList desde model.js 
+
+let { StudentList} = require('./model'); //importar StudentList desde model.js 
+
+let {DATABASE_URL, PORT} = require( './config'); //importa las dos variables desde config.js
 
 let app = express();
 
@@ -211,6 +212,6 @@ function closeServer() {
         });
 }
 
-runServer( 8080, "mongodb://localhost/university");
+runServer( PORT, DATABASE_URL );
 
 module.exports = { app, runServer, closeServer}
