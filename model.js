@@ -27,7 +27,36 @@ let StudentList = {
             .catch( error => {
                 return Error(error);
             });
+    },
+    findStudentByMatr : function( matr ){
+        return Student.find({matricula: matr})
+            .then( student => {
+                return student;
+            })
+            .catch( error => {
+                return Error( error );
+            });
+    },
+    createNewStudent : function ( elemento ){
+        return Student.create( elemento )
+            .then (student =>{
+                return student;
+            })
+            .catch( error => {
+                return Error( error );
+            });
+    },
+    updateStudent : function( student ){
+        return Student.update( student)
+            .then ( result => {
+                return result;
+            })
+            .catch( error => {
+                return Error( error );
+            })
+
     }
+
 };
 
 module.exports = {

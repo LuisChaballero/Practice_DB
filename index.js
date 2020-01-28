@@ -11,6 +11,7 @@ let {DATABASE_URL, PORT} = require( './config'); //importa las dos variables des
 let app = express();
 
 //Esto es para que funcione el fetch() de repl.it
+/*
 app.use(function (req, res) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
@@ -19,7 +20,7 @@ app.use(function (req, res) {
         return res.send(204);
     }
 
-});
+}); */
 
 
 app.use(express.static('public')); // Significa que va a haber una parte publica
@@ -48,25 +49,7 @@ let estudiantes = [{
 ];
 
 // Endpoint 1
-app.get('/api/students', (req, res) => {
-    //res -->  la respuesta que vamos a enviar
-
-    StudentList.getAll()
-        //Como es una promesa, tiene que esperar a una respuesta
-        //Por eso se usa .then()
-        .then(studentList => {
-            return res.status(200).json(studentList);
-        })
-        .catch(error => {
-            res.statusMessage = "Hubo un error de conexion"
-            //se tiene que enviar algo para que funcione -> .send()
-            return res.status(500).send();
-        });
-
-
-    //res.status( 200 ).json( estudiantes ); sin usar studentList 
-    // http://localhost:8181/api/students
-});
+//First simple get
 
 // Endpoint 2
 app.get('/api/getById', (req, res) => {
@@ -109,7 +92,7 @@ app.post( '/api/newStudent', jsonParser, ( req, res) =>{
     res.status(200).json({});
     
 }); */
-
+/*
 
 //Hacer POST
 // url = /api/newStudent
@@ -139,7 +122,7 @@ app.post('/api/newStudent', jsonParser, (req, res) => {
     res.statusMessage = "Estudiante agregado"
     return res.status(201).json({});
 
-});
+}); */
 
 
 /* Hacer PUT
@@ -171,7 +154,85 @@ app.post('/api/newStudent', jsonParser, (req, res) => {
 /*
 app.listen()
 */
+//Nuevos Endpoints 
+
+app.get('/api/students', (req, res) => {
+    //res -->  la respuesta que vamos a enviar
+
+    StudentList.getAll()
+        //Como es una promesa, tiene que esperar a una respuesta
+        //Por eso se usa .then()
+        .then(studentList => {
+            return res.status(200).json(studentList);
+        })
+        .catch(error => {
+            res.statusMessage = "Hubo un error de conexion"
+            //se tiene que enviar algo para que funcione -> .send()
+            return res.status(500).send();
+        });
+
+
+    //res.status( 200 ).json( estudiantes ); sin usar studentList 
+    // http://localhost:8080/api/students
+});
+
 //Mongoose POST
+app.post('/api/newStudent', jsonParser, (req, res) => {
+    
+    let nNombre = req.body.nombre;
+    let nApellido = req.body.apellido;
+    let nMatricula = req.body.matricula;
+/*
+    if (nNombre == "" || nApellido == "" || nMatricula == ""){
+        res.statusMessage = "Datos Faltantes para agregar estudiante";
+        return res.status(400).send();
+    } */
+
+    if (nNombre == undefined || nApellido == undefined || nMatricula == undefined){
+        res.statusMessage = "Datos Faltantes para agregar estudiante";
+        return res.status(406).send();
+    }
+
+    StudentList.findStudentByMatr(nMatricula)
+        .then( result => {
+            console.log("hola");
+            if (!result){
+                console.log("nuevo");
+                let nuevoEstudiante = {
+                    nombre: nNombre,
+                    apellido: nApellido,
+                    matricula: nMatricula
+                }
+                StudentList.createNewStudent(nuevoEstudiante)
+                    .then( student => {
+                        res.statusMessage = "Estudiante agregado a la base de datos";
+                        return res.status(201).send(student);
+                    })
+                    .catch( error => {
+                        return Error( error );
+                    });
+            }
+            else{
+                res.statusMessage = "Estudiante ya se encuentra en la base de datos";
+                return res.status(409).send();
+            }
+        })      
+});
+/*
+url = /api/updateStudent/:id  --> req.params
+Validar que:
+a) Que el request tenga matricula y alguno de los siguientes: nombre, apellido
+   Arrojar 406 si falta alguno.
+b) Que el parametro id coincida con la matricula del body.
+   Arrojar 409 si no son iguales.
+
+c) Que el id a modificar exista en el arreglo de estudiantes
+   Arrojar 404 si no se encuentra.
+En exito, actualizar el estudiante. Regresar res con status 202 y el estudiante modificado.*/
+app.put('api/updateStudent/:id', ( req, res ) => {
+
+});
+
 
 let server;
 

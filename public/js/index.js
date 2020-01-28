@@ -1,4 +1,4 @@
-import { response } from "express";
+//import { response } from "express";
 
 function loadStudents(){
     let url = "/api/students";
@@ -15,7 +15,19 @@ function loadStudents(){
             displayResults( responseJSON);
         });
 }
-
+/*
+function addStudent(){
+    $.ajax({
+        url: '/api/newStudent',
+        method: "POST",
+        data: JSON.stringify({nombre: "A", apellido: "S", matricula: 123 }),
+        contentType: "application/json",
+        dataType: "json",
+        success: function()
+        error: 
+    });
+}
+*/
 function displayResults(responseJSON){
     $('#studentList').empty();
     for(let i=0; i < responseJSON.length; i++){
