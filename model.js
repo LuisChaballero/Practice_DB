@@ -1,5 +1,6 @@
 //
 let mongoose = require( 'mongoose');
+//mongoose.set('useFindAndModify', false);
 
 mongoose.Promise = global.Promise;
 
@@ -29,7 +30,16 @@ let StudentList = {
             });
     },
     findStudentByMatr : function( matr ){
-        return Student.find({matricula: matr})
+        return Student.find({matricula: matr })
+            .then( student => {
+                return student;
+            })
+            .catch( error => {
+                return Error( error );
+            });
+    },
+    findStudentByName : function( name ){
+        return Student.find({nombre: name })
             .then( student => {
                 return student;
             })
@@ -46,18 +56,29 @@ let StudentList = {
                 return Error( error );
             });
     },
-    updateStudent : function( student ){
-        return Student.update( student)
+    updateStudent : function ( matr, datos){
+
+        return Student.findOneAndUpdate( {matricula: matr}, datos )
             .then ( result => {
                 return result;
             })
             .catch( error => {
                 return Error( error );
-            })
+            });
+
+    },
+    deleteStudent : function ( matr ){
+        return Student.remove( {matricula: matr} )
+        .then ( result => {
+            return result;
+        })
+        .catch( error => {
+            return Error( error );
+        });
 
     }
 
-};
+}
 
 module.exports = {
     StudentList
